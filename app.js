@@ -113,6 +113,74 @@ function createStars() {
     }
 }
 
+// Tạo hiệu ứng mưa sao băng
+function createShootingStars() {
+    const container = document.getElementById('stars-container');
+    // Tạo khoảng 6 ngôi sao băng rơi so le nhau
+    for (let i = 0; i < 6; i++) {
+        const meteor = document.createElement('div');
+        meteor.className = 'shooting-star';
+        
+        // Vị trí ngẫu nhiên, chủ yếu rải rác ở nửa trên màn hình (0-50vh) và rộng theo chiều ngang
+        meteor.style.top = `${Math.random() * 50 - 10}vh`;
+        meteor.style.left = `${Math.random() * 120}vw`; // Rộng hơn 100vw một chút để rớt từ mép vào
+        
+        // Random thời gian trễ để chúng không rơi cùng một lúc
+        meteor.style.animationDelay = `${Math.random() * 8}s`;
+        // Random tốc độ rơi
+        meteor.style.animationDuration = `${Math.random() * 2 + 3}s`;
+        
+        container.appendChild(meteor);
+    }
+}
+
+// Tạo hiệu ứng ban ngày (Hoa nắng và Chim bay)
+function createDayEffects() {
+    const dayBg = document.querySelector('.day-background');
+    if (!dayBg) return;
+
+    // 1. Tạo 25 đốm hoa nắng bay lơ lửng
+    for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'day-particle';
+        
+        const size = Math.random() * 15 + 5;
+        p.style.width = `${size}px`;
+        p.style.height = `${size}px`;
+        
+        p.style.left = `${Math.random() * 100}vw`;
+        p.style.top = `${Math.random() * 100}vh`; 
+        
+        p.style.animationDuration = `${Math.random() * 10 + 10}s`;
+        p.style.animationDelay = `${Math.random() * 10}s`;
+        
+        dayBg.appendChild(p);
+    }
+
+    // 2. Tạo 4 chú chim bay ngang qua màn hình
+    // Sử dụng SVG thay cho Emoji để có thể tạo hiệu ứng vỗ cánh
+    const birdSVG = `
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path class="wing wing-left" d="M5,20 Q15,5 20,20" />
+            <path class="wing wing-right" d="M35,20 Q25,5 20,20" />
+        </svg>
+    `;
+
+    for (let i = 0; i < 4; i++) {
+        const b = document.createElement('div');
+        b.className = 'bird';
+        b.innerHTML = birdSVG;
+        b.style.color = "rgba(71, 85, 105, 0.7)"; // Màu xám đen (Slate) mờ mờ cho cánh chim ở xa
+        
+        // Bay ở nửa trên của màn hình
+        b.style.top = `${Math.random() * 40 + 5}vh`; 
+        b.style.animationDuration = `${Math.random() * 20 + 20}s`; // Bay chầm chậm (20-40s)
+        b.style.animationDelay = `${Math.random() * 15}s`;
+        
+        dayBg.appendChild(b);
+    }
+}
+
 // 1. Tạo HTML động cho 30 chiếc nơ
 function createBows() {
     for (let i = 1; i <= totalBows; i++) {
@@ -178,11 +246,19 @@ function createBows() {
             const color = vibrantColors[i % vibrantColors.length];
             // So le trái phải
             const align = i % 2 === 0 ? 'flex-start' : 'flex-end';
-            // Random khoảng cách so với lề
-            const padding = `${Math.random() * 15 + 15}%`; 
             
-            wrapper.style.justifyContent = align;
-            wrapper.style[align === 'flex-start' ? 'paddingLeft' : 'paddingRight'] = padding;
+            // Trên điện thoại: Căn giữa tuyệt đối để chữ không bao giờ bị cắt 2 bên
+            const isMobile = window.innerWidth < 768;
+            
+            if (isMobile) {
+                wrapper.style.justifyContent = 'center';
+                // Thêm một chút padding ngẫu nhiên để vẫn có sự sống động nhẹ nhàng
+                wrapper.style.paddingLeft = `${Math.random() * 10 - 5}%`;
+            } else {
+                const padding = `${Math.random() * 15 + 15}%`; 
+                wrapper.style.justifyContent = align;
+                wrapper.style[align === 'flex-start' ? 'paddingLeft' : 'paddingRight'] = padding;
+            }
             
             wrapper.innerHTML = `
                 <div class="bow bow-${i}" style="color: ${color}">
@@ -302,9 +378,12 @@ function setupAnimations() {
         }
     });
 
+    // Tính toán scale tối đa cho nơ 24 tùy theo màn hình (tránh bị tràn lố trên điện thoại)
+    const maxBowScale = window.innerWidth < 768 ? 4 : 6;
+
     // Nơ 24 phóng to và mờ dần
     tl24.to(".bow-24", {
-        scale: 6,
+        scale: maxBowScale,
         opacity: 0,
         rotation: 45,
         duration: 1.5,
@@ -536,6 +615,8 @@ window.addEventListener('resize', () => {
 // Khởi chạy
 document.addEventListener('DOMContentLoaded', () => {
     createStars();
+    createShootingStars(); // Kích hoạt mưa sao băng
+    createDayEffects(); // Khởi tạo chim bay và hoa nắng ẩn sẵn
     createBows();
     setTimeout(() => {
         setupAnimations();

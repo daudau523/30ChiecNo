@@ -19,12 +19,17 @@
     box-sizing: border-box;
 }
 
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    width: 100%;
+}
+
 body {
     background-color: var(--bg-color);
     background-image: radial-gradient(circle at 50% 0%, #1e203b 0%, #0b0c15 80%);
     color: var(--text-color);
     font-family: var(--font-ui);
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     transition: background-color 1s ease;
 }
@@ -51,6 +56,39 @@ body {
 @keyframes twinkle {
     0%, 100% { opacity: 0.2; transform: scale(0.8); }
     50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Mưa sao băng (Shooting Stars) */
+.shooting-star {
+    position: absolute;
+    width: 150px;
+    height: 2px;
+    /* Đầu sao băng sáng chói, đuôi mờ dần */
+    background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0));
+    border-radius: 50%;
+    transform: rotate(-45deg);
+    filter: drop-shadow(0 0 10px #ffffff);
+    animation: meteor-fall 4s infinite linear both;
+    pointer-events: none;
+}
+
+@keyframes meteor-fall {
+    0% {
+        opacity: 0;
+        transform: rotate(-45deg) translateX(200px);
+    }
+    10% {
+        opacity: 1;
+        transform: rotate(-45deg) translateX(-300px);
+    }
+    20% {
+        opacity: 0;
+        transform: rotate(-45deg) translateX(-800px);
+    }
+    100% {
+        opacity: 0;
+        transform: rotate(-45deg) translateX(-800px);
+    }
 }
 
 /* The Moon */
@@ -97,6 +135,92 @@ body {
     opacity: 0; /* Ẩn lúc ban đêm */
     z-index: 0; /* Đè lên trăng và sao, nhưng dưới các chiếc nơ */
     pointer-events: none;
+    overflow: hidden; /* Không cho chim bay lọt ra khỏi màn hình gây scroll ngang */
+}
+
+/* Hoa nắng ban ngày (Light motes) */
+.day-particle {
+    position: absolute;
+    background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float-up infinite ease-in-out both;
+}
+
+@keyframes float-up {
+    0% {
+        transform: translateY(5vh) translateX(0) scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        transform: translateY(0vh) translateX(10px) scale(0.8);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateY(-15vh) translateX(30px) scale(1.2);
+        opacity: 0.7;
+    }
+    80% {
+        transform: translateY(-30vh) translateX(5px) scale(0.9);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(-40vh) translateX(-20px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* Đàn chim bay */
+.bird {
+    position: absolute;
+    pointer-events: none;
+    animation: fly-bird infinite linear both;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
+}
+
+/* Hiệu ứng vỗ cánh */
+.wing-left {
+    transform-origin: 20px 20px;
+    animation: flap-l 0.4s infinite alternate ease-in-out;
+}
+
+.wing-right {
+    transform-origin: 20px 20px;
+    animation: flap-r 0.4s infinite alternate ease-in-out;
+}
+
+@keyframes flap-l {
+    0% { transform: rotate(15deg); }
+    100% { transform: rotate(-30deg); }
+}
+
+@keyframes flap-r {
+    0% { transform: rotate(-15deg); }
+    100% { transform: rotate(30deg); }
+}
+
+@keyframes fly-bird {
+    0% {
+        /* Bỏ lật ngang vì SVG chim chữ V đã cân xứng */
+        transform: translateX(-10vw) translateY(5vh) scale(0.6);
+        opacity: 0;
+    }
+    10% {
+        transform: translateX(2vw) translateY(3vh) scale(0.64);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateX(50vw) translateY(-5vh) scale(0.8);
+        opacity: 0.8;
+    }
+    90% {
+        transform: translateX(98vw) translateY(-13vh) scale(0.96);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(110vw) translateY(-15vh) scale(1);
+        opacity: 0;
+    }
 }
 
 /* Mặt trời */
@@ -437,22 +561,79 @@ h1, h2, h3, .serif {
     font-style: italic;
 }
 
-/* Responsive */
+/* Responsive - Tối ưu cho thiết bị di động */
 @media (max-width: 768px) {
     .bow-wrapper {
-        min-height: 30vh;
+        min-height: 40vh; /* Tăng lại khoảng cách dọc để các nơ không đè lên nhau */
+    }
+    
+    .bow {
+        width: 120px; /* Nơ nhỏ lại gọn gàng hơn */
+        height: 120px;
+    }
+
+    .bow-text {
+        white-space: normal; /* Cho phép rớt dòng */
+        width: 250px; /* Đặt chiều rộng cố định */
+        max-width: 85vw; /* Phòng màn hình quá nhỏ */
+        font-size: 0.95rem;
+        line-height: 1.4;
+        bottom: -60px; /* Dịch xuống sâu hơn một chút để nhường chỗ cho text nhiều dòng */
     }
     
     .certificate {
-        width: 92%;
-        padding: 1rem;
+        width: 95%;
+        padding: 0.5rem;
     }
     
     .certificate-inner {
-        padding: 3rem 1.5rem;
+        padding: 2.5rem 1rem;
+    }
+    
+    .certificate h2 {
+        font-size: 1.8rem;
+        white-space: normal; /* Cho phép xuống dòng */
+        word-wrap: break-word;
+    }
+    
+    .highlight-name {
+        font-size: 2.5rem;
+        white-space: normal;
     }
     
     .certificate p {
         max-width: 100%;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .certificate .seal {
+        width: 60px; /* Nhỏ lại trên mobile */
+        height: 60px;
+    }
+
+    .continue-scroll {
+        font-size: 1.3rem; /* Giảm size để text không quá to */
+        width: 90%;
+        line-height: 1.5;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        padding: 0 10px;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        padding: 0 20px;
+    }
+
+    .footer {
+        font-size: 1.5rem;
+        padding: 1rem;
+    }
+
+    .shooting-star {
+        width: 100px; /* Sao băng ngắn lại trên mobile */
     }
 }
