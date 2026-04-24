@@ -1,0 +1,458 @@
+:root {
+    /* Night Sky Theme */
+    --bg-color: #0b0c15; /* Deep night sky */
+    --text-color: #f5f6fa; /* Starlight white */
+    --text-muted: #8b92a5; /* Dimmed starlight */
+    
+    /* Elegant and romantic colors */
+    --accent-color: #f8e19c; /* Soft Moonlight */
+    --accent-glow: rgba(248, 225, 156, 0.3);
+    
+    /* Elegant font stack with full Vietnamese support */
+    --font-ui: 'Be Vietnam Pro', sans-serif;
+    --font-serif: 'Lora', serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: radial-gradient(circle at 50% 0%, #1e203b 0%, #0b0c15 80%);
+    color: var(--text-color);
+    font-family: var(--font-ui);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 1s ease;
+}
+
+/* Stars Container */
+#stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -2; /* Nằm dưới cùng */
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 4px #fff;
+    animation: twinkle 3s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* The Moon */
+.moon {
+    position: fixed;
+    top: 50px;
+    right: 10%;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #f8e19c;
+    box-shadow: 
+        0 0 60px rgba(248, 225, 156, 0.4),
+        inset -15px -15px 30px rgba(0,0,0,0.1);
+    z-index: -1; /* Trên sao, dưới bầu trời ngày */
+    pointer-events: none;
+    /* Hiệu ứng mờ ảo (glow) */
+    filter: drop-shadow(0 0 20px rgba(248, 225, 156, 0.6));
+}
+
+.moon::after {
+    /* Vài vệt lồi lõm của mặt trăng */
+    content: '';
+    position: absolute;
+    top: 25px;
+    left: 20px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.05);
+    box-shadow: 30px 10px 0 -5px rgba(0,0,0,0.05),
+                20px 40px 0 -8px rgba(0,0,0,0.04);
+}
+
+/* Bầu trời ban ngày (Sunrise) */
+.day-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Gradient từ xanh trời sáng đến hồng cam bình minh */
+    background: linear-gradient(180deg, #93c5fd 0%, #fbcfe8 60%, #fde68a 100%);
+    opacity: 0; /* Ẩn lúc ban đêm */
+    z-index: 0; /* Đè lên trăng và sao, nhưng dưới các chiếc nơ */
+    pointer-events: none;
+}
+
+/* Mặt trời */
+.sun {
+    position: fixed;
+    bottom: -150px; /* Nằm dưới đáy màn hình */
+    right: 15vw; /* Hiện ra bên phải */
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fffbe0 0%, #f59e0b 100%);
+    box-shadow: 0 0 60px rgba(245, 158, 11, 0.8), 0 0 120px rgba(251, 191, 36, 0.6);
+    z-index: 1; /* Nằm trên nền trời ngày, nhưng vẫn dưới nơ */
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* Typography */
+h1, h2, h3, .serif {
+    font-family: var(--font-serif);
+}
+
+/* Hero Section */
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-bg-glow {
+    display: none; /* Bỏ glow vì đã có mặt trăng */
+}
+
+.hero h1 {
+    font-size: clamp(3.5rem, 10vw, 7rem);
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    line-height: 1.1;
+    letter-spacing: -1px;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    max-width: 500px;
+    padding: 0 20px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    color: var(--accent-color);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(15px); }
+}
+
+/* Bows Container */
+#bows-container {
+    position: relative;
+    width: 100%;
+    padding: 10vh 0;
+    display: block; /* QUAN TRỌNG: Phải dùng block thay vì flex để tính năng ghim (pin) của GSAP hoạt động đúng, không bị các nơ sau trườn lên đè vào */
+}
+
+/* Bow Wrapper */
+.bow-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 40vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10; /* Nằm trên cả bầu trời ngày và mặt trời */
+}
+
+.bow {
+    position: relative;
+    width: 200px; /* Tăng kích thước nơ cho to và nổi bật hơn */
+    height: 200px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+    cursor: pointer;
+    z-index: 10;
+    /* Soft, colorful shadow instead of harsh dark drop-shadow */
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.06));
+}
+
+.bow:hover {
+    transform: scale(1.08) translateY(-5px);
+    filter: drop-shadow(0 25px 35px rgba(0,0,0,0.1));
+}
+
+.bow-number {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.6;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.bow-text {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    text-align: center;
+    opacity: 0;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* The Special Bow (24) */
+.special-wrapper {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    perspective: 1200px;
+    z-index: 100; /* Nằm trên cùng, đè lên các nơ khác khi chúng cuộn lên */
+    margin-bottom: 450vh; /* Kéo dài thời lượng pin để thêm hiệu ứng chữ giữa màn hình */
+}
+
+/* Chỉ báo hướng dẫn cuộn tiếp - Hiệu ứng Cinematic giữa màn hình */
+.continue-scroll {
+    position: absolute;
+    top: 70%; /* Nằm dưới chiếc nơ 24 sau khi nó thu nhỏ lại */
+    left: 50%; /* Nằm chính giữa màn hình theo chiều ngang */
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 5vw, 3rem); /* To và rõ ràng hơn */
+    letter-spacing: 2px;
+    opacity: 0; /* Ẩn lúc đầu, được GSAP gọi lên */
+    z-index: 20;
+    pointer-events: none;
+    width: 100%;
+    text-align: center;
+}
+
+/* Hiệu ứng chữ lấp lánh (Shimmer Text) */
+.continue-scroll span {
+    background: linear-gradient(90deg, #f8e19c, #ff6699, #f8e19c);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: gradient-shimmer 3s linear infinite;
+    font-weight: 700;
+    text-shadow: 0 0 30px rgba(248, 225, 156, 0.3);
+}
+
+@keyframes gradient-shimmer {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* Các Icon dễ thương */
+.cute-decor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.mini-star {
+    font-size: 2.5rem;
+    color: #f8e19c;
+    animation: twinkle-star 1.5s infinite alternate ease-in-out;
+    text-shadow: 0 0 15px rgba(248, 225, 156, 0.8);
+    line-height: 1;
+}
+
+.mini-bow {
+    width: 60px;
+    height: 60px;
+    animation: pulse-bow 2s infinite ease-in-out;
+    filter: drop-shadow(0 5px 15px rgba(255, 102, 153, 0.6));
+}
+
+@keyframes twinkle-star {
+    0% { transform: scale(0.8) rotate(-15deg); opacity: 0.6; }
+    100% { transform: scale(1.3) rotate(15deg); opacity: 1; }
+}
+
+.special-bow {
+    width: 220px;
+    height: 220px;
+    z-index: 20;
+}
+
+/* The Certificate - Elegant Night Version */
+.certificate {
+    position: absolute;
+    width: 90%; /* Thu hẹp lại một chút */
+    max-width: 700px; /* Thu nhỏ max-width */
+    background: rgba(18, 20, 36, 0.85);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(248, 225, 156, 0.3);
+    border-radius: 12px;
+    padding: 1rem; /* Giảm khoảng cách viền ngoài */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: scale(0.95);
+    /* Soft moonlight shadow */
+    box-shadow: 0 40px 100px -10px rgba(0, 0, 0, 0.8), 
+                0 0 40px rgba(248, 225, 156, 0.15);
+    z-index: 15;
+}
+
+.certificate-inner {
+    border: 1px solid rgba(248, 225, 156, 0.5);
+    border-radius: 8px;
+    padding: 3rem 2rem; /* Giảm khoảng cách viền trong để bớt chiếm chiều cao */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+}
+
+.certificate h2 {
+    color: var(--accent-color);
+    font-size: min(6vw, 3.2rem); /* Chữ nhỏ lại một chút để không tràn */
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap; /* Tuyệt đối không cho chữ xuống dòng */
+}
+
+.certificate .subtitle {
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Hiệu ứng nổi bật dành riêng cho tên */
+.highlight-name {
+    font-family: var(--font-serif);
+    font-size: min(8vw, 4rem); /* Giảm size tên một chút */
+    font-weight: 700;
+    color: #ff3366; /* Màu hồng rực rỡ */
+    text-shadow: 0 0 30px rgba(255, 51, 102, 0.5), 0 0 10px rgba(255, 255, 255, 0.3);
+    margin-bottom: 2rem; /* Giảm margin bottom */
+    letter-spacing: 2px;
+    text-align: center;
+    white-space: nowrap; /* Không cho tên bị rớt dòng */
+}
+
+.certificate p {
+    font-size: clamp(1rem, 2vw, 1.2rem); /* Giảm size text */
+    line-height: 1.6;
+    text-align: center;
+    max-width: 90%;
+    margin-bottom: 2.5rem;
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+/* Elegant Seal -> Đổi thành chiếc nơ khổng lồ */
+.certificate .seal {
+    width: 90px; /* Thu nhỏ chiếc nơ lại */
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 15px 25px rgba(255, 51, 102, 0.4));
+    animation: pulse-bow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-bow {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 20px 35px rgba(255, 51, 102, 0.6)); }
+}
+
+/* Particles */
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+}
+
+/* Footer */
+.footer {
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(255, 51, 102, 0.03), transparent);
+}
+
+.footer-content {
+    opacity: 0;
+}
+
+.footer .highlight {
+    color: var(--accent-color);
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .bow-wrapper {
+        min-height: 30vh;
+    }
+    
+    .certificate {
+        width: 92%;
+        padding: 1rem;
+    }
+    
+    .certificate-inner {
+        padding: 3rem 1.5rem;
+    }
+    
+    .certificate p {
+        max-width: 100%;
+    }
+}
